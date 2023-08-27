@@ -1,2 +1,0 @@
-print("Umar");
-print("release")
