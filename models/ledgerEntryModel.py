@@ -1,23 +1,28 @@
-import uuid
-from typing import Optional
+import datetime
+from typing import Optional, Annotated
+from annotation.objectIdAnnotated import ObjectIdPydanticAnnotation
 
+from bson import ObjectId
 from pydantic import BaseModel, Field
 
 
 class LedgerEntry(BaseModel):
-    id: object = Field(default_factory=uuid.uuid4, alias="_id")
-    currentBalance: float = Field(...)
-    dateOfEntry: object = Field(...)
-    expenditure: object = Field(...)
+    id: Annotated[ObjectId, ObjectIdPydanticAnnotation] = Field(default_factory=ObjectId, alias="_id")
     income: object = Field(...)
+    expenditure: object = Field(...)
+    currentBalance: float = Field(...)
+    lastUpdated: object = Field(
+        default_factory=datetime.datetime.today, alias="lastUpdated")
 
     class Config:
         allow_population_by_field_name = True
         schema_extra = {
             "example": {
-                "_id": "066de609-b04a-4b30-b46c-32537c7f1f6e",
-                "currentBalance": 1000,
-                "dateOfEntry": "21-08-2023",
+                "_id": ObjectId('64eb840060251801697d99bb'),
+                "income": {
+                    "fees": 10000,
+                    "person1": 2000
+                },
                 "expenditure": {
                     "books": 4000,
                     "celebration": {
@@ -25,25 +30,24 @@ class LedgerEntry(BaseModel):
                         "decoration": 1000
                     },
                 },
-                "income": {
-                    "fees": 10000,
-                    "person1": 2000
-                }
+                "currentBalance": 1000,
+                "lastUpdated": datetime.datetime.today
             }
         }
 
 
 class LedgerEntryUpdate(BaseModel):
-    currentBalance: Optional[float]
-    dateOfEntry: Optional[object]
-    expenditure: Optional[object]
     income: Optional[object]
+    expenditure: Optional[object]
+    currentBalance: Optional[float]
 
     class Config:
         schema_extra = {
             "example": {
-                "currentBalance": 1000,
-                "dateOfEntry": "21-08-2023",
+                "income": {
+                    "fees": 10000,
+                    "person1": 2000
+                },
                 "expenditure": {
                     "books": 4000,
                     "celebration": {
@@ -51,9 +55,6 @@ class LedgerEntryUpdate(BaseModel):
                         "decoration": 1000
                     },
                 },
-                "income": {
-                    "fees": 10000,
-                    "person1": 2000
-                }
+                "currentBalance": 1000,
             }
         }
